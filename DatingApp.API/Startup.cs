@@ -29,6 +29,7 @@ namespace DatingApp.API
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddDbContext<DatingContext>(options => options.UseSqlite(Configuration.GetConnectionString("DatingDbConnection")));
+            services.AddCors();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -44,6 +45,12 @@ namespace DatingApp.API
             }
 
             app.UseHttpsRedirection();
+            // CORS must be configured before mvc
+            app.UseCors(policy => policy
+                .AllowAnyOrigin()
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials());
             app.UseMvc();
         }
     }
