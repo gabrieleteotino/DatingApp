@@ -1,7 +1,11 @@
+using System;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using DatingApp.API.Data;
 using DatingApp.API.DTOs;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 
 namespace DatingApp.API.Controllers
 {
@@ -19,21 +23,57 @@ namespace DatingApp.API.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] UserForRegistration userForRegistration)
         {
-            // TODO validation
-
             // Convert username to lowercase to avoid multiple user with similar names like "John" and "john"
             // Use invariant to avoid conflicts for users from different cultures
             userForRegistration.Username = userForRegistration.Username.ToLowerInvariant();
 
-            if(await _repo.UserExists(userForRegistration.Username)){
-                return BadRequest("Username already in use");
+            // Business Validation
+            if (await _repo.UserExists(userForRegistration.Username))
+            {
+                ModelState.AddModelError("Username", "Username already in use.");
             }
 
-            var userToCreate = new Models.User{ Username = userForRegistration.Username };
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var userToCreate = new Models.User { Username = userForRegistration.Username };
             var createdUser = await _repo.Register(userToCreate, userForRegistration.Password);
 
             // TODO this 201 is just a temporary solution, we should return a path to the new entity
             return StatusCode(201);
+        }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] DTOs.UserForLogin userForLogin)
+        {
+            var user = await _repo.Login(userForLogin.Username.ToLower(), userForLogin.Password);
+
+            if (user == null)
+            {
+                return Unauthorized();
+            }
+
+            // TODO move security key to a secure storage location
+            var key = System.Text.Encoding.UTF8.GetBytes("super duper secret");
+
+            // Generate a token for the user
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new Claim[] {
+                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                    new Claim(ClaimTypes.Name, user.Username)
+                }),
+                Expires = DateTime.UtcNow.AddDays(1),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            };
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            var tokenString = tokenHandler.WriteToken(token);
+
+            return Ok(new { tokenString });
         }
     }
 }
