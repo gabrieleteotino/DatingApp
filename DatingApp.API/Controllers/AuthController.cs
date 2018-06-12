@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using DatingApp.API.Data;
 using DatingApp.API.DTOs;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
 namespace DatingApp.API.Controllers
@@ -14,10 +15,12 @@ namespace DatingApp.API.Controllers
     public class AuthController : Controller
     {
         private readonly IAuthRepository _repo;
+        private readonly IConfiguration _config;
 
-        public AuthController(IAuthRepository repo)
+        public AuthController(IAuthRepository repo, IConfiguration config)
         {
             _repo = repo;
+            _config = config;
         }
 
         [HttpPost("register")]
@@ -55,8 +58,7 @@ namespace DatingApp.API.Controllers
                 return Unauthorized();
             }
 
-            // TODO move security key to a secure storage location
-            var key = System.Text.Encoding.UTF8.GetBytes("super duper secret");
+            var key = System.Text.Encoding.UTF8.GetBytes(_config.GetSection("AppSettings:TokenSecret").Value);
 
             // Generate a token for the user
             var tokenDescriptor = new SecurityTokenDescriptor
