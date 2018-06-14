@@ -10,10 +10,7 @@ export class AuthService {
   constructor(private http: Http) {}
 
   login(model: any) {
-    const header = new Headers({ 'Content-type': 'application/json' });
-    const options = new RequestOptions({ headers: header });
-
-    return this.http.post(this.baseUrl + 'login', model, options).pipe(
+    return this.http.post(this.baseUrl + 'login', model, this.httpOptions()).pipe(
       map(response => {
         const user = response.json();
         if (user) {
@@ -22,5 +19,14 @@ export class AuthService {
         }
       })
     );
+  }
+
+  register(model: any) {
+    return this.http.post(this.baseUrl + 'register', model, this.httpOptions());
+  }
+
+  private httpOptions() {
+    const header = new Headers({ 'Content-type': 'application/json' });
+    return new RequestOptions({ headers: header });
   }
 }
