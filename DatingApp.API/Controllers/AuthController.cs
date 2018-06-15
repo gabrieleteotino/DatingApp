@@ -26,10 +26,6 @@ namespace DatingApp.API.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] UserForRegistration userForRegistration)
         {
-            // Convert username to lowercase to avoid multiple user with similar names like "John" and "john"
-            // Use invariant to avoid conflicts for users from different cultures
-            userForRegistration.Username = userForRegistration.Username.ToLowerInvariant();
-
             // Business Validation
             if (await _repo.UserExists(userForRegistration.Username))
             {
@@ -51,7 +47,12 @@ namespace DatingApp.API.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] UserForLogin userForLogin)
         {
-            var user = await _repo.Login(userForLogin.Username.ToLower(), userForLogin.Password);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var user = await _repo.Login(userForLogin.Username, userForLogin.Password);
 
             if (user == null)
             {
