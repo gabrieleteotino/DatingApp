@@ -23,7 +23,7 @@
         <div class="form-group">
           <input type="password" placeholder="Password" class="form-control" required name="password" [(ngModel)]="model.password">
         </div>
-        <button type="submit" [disabled]="!loginForm.valid" class="btn btn-success">Sign in</button>
+        <button type="submit"  class="btn btn-success">Sign in</button>
       </form>
 
       <ul *ngIf="loggedIn()" class="nav navbar-nav navbar-right">

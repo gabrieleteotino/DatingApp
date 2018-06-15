@@ -18,7 +18,7 @@ export class NavComponent implements OnInit {
     this.authService.login(this.model).subscribe(data => {
       console.log('Sucessfully logged in');
     }, error => {
-      console.log('Login unsuccesful');
+      console.log(error);
     });
   }
 
