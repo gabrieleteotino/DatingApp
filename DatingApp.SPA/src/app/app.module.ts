@@ -8,6 +8,7 @@ import { AppComponent } from './app.component';
 import { NavComponent } from './nav/nav.component';
 import { HomeComponent } from './home/home.component';
 import { RegisterComponent } from './register/register.component';
+import { AlertifyService } from './_services/alertify.service';
 
 
 @NgModule({
@@ -23,7 +24,8 @@ import { RegisterComponent } from './register/register.component';
     FormsModule
   ],
   providers: [
-    AuthService
+    AuthService,
+    AlertifyService
   ],
   bootstrap: [AppComponent]
 })
