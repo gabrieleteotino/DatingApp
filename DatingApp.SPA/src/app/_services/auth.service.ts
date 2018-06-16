@@ -1,26 +1,20 @@
-import { map, catchError } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
-import { Http, Headers, RequestOptions } from '@angular/http';
-import { Observable } from 'rxjs/Observable';
-import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
+import { map, catchError } from 'rxjs/operators';
 import { _throw } from 'rxjs/observable/throw';
-// import { Observable, throwError } from 'rxjs';
-
-// import 'rxjs/add/observable/throw';
+import { HttpClient, HttpHeaders, HttpResponse, HttpErrorResponse } from '@angular/common/http';
 
 @Injectable()
 export class AuthService {
   baseUrl = 'https://localhost:5001/api/auth/';
   userToken: any;
 
-  constructor(private http: Http) {}
+  constructor(private http: HttpClient) {}
 
   login(model: any) {
     return this.http
       .post(this.baseUrl + 'login', model, this.httpOptions())
       .pipe(
-        map(response => {
-          const user = response.json();
+        map((user: HttpResponse<any>) => {
           if (user) {
             localStorage.setItem('token', user.tokenString);
             this.userToken = user.tokenString;
@@ -37,17 +31,18 @@ export class AuthService {
   }
 
   private httpOptions() {
-    const header = new Headers({ 'Content-type': 'application/json' });
-    return new RequestOptions({ headers: header });
+    return {
+      headers: new HttpHeaders({ 'Content-type': 'application/json' }),
+      oberve: 'response'
+    };
   }
 
-  private handleError(error: any) {
-    const applicationError = error.headers.get('Application-Error');
+  private handleError(errorResponse: HttpErrorResponse) {
+    const applicationError = errorResponse.headers.get('Application-Error');
     if (applicationError) {
-      // return Observable.throw(applicationError);
-      _throw(applicationError);
+      return _throw(applicationError);
     }
-    const serverError = error.json();
+    const serverError = errorResponse.error;
     let modelStateErrors = '';
     if (serverError) {
       for (const key in serverError) {

@@ -7,9 +7,20 @@
         {
             "type": "chrome",
             "request": "launch",
-            "name": "Launch Chromium",
+            "name": "Chromium (debian)",
             "url": "http://localhost:4200",
             "runtimeExecutable": "/usr/bin/chromium",
+            "webRoot": "${workspaceFolder}",
+            "sourceMaps": true,
+            // this enables chromium to be launched even if it is alredy open
+            "userDataDir": "${workspaceRoot}/.vscode/chrome",
+        },
+        {
+            "type": "chrome",
+            "request": "launch",
+            "name": "Chromium (ubuntu)",
+            "url": "http://localhost:4200",
+            "runtimeExecutable": "/usr/bin/chromium-browser",
             "webRoot": "${workspaceFolder}",
             "sourceMaps": true,
             // this enables chromium to be launched even if it is alredy open
