@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { map, catchError } from 'rxjs/operators';
-import { _throw } from 'rxjs/observable/throw';
+import { throwError } from 'rxjs';
 import { HttpClient, HttpHeaders, HttpResponse, HttpErrorResponse } from '@angular/common/http';
 
 @Injectable()
@@ -14,7 +14,7 @@ export class AuthService {
     return this.http
       .post(this.baseUrl + 'login', model, this.httpOptions())
       .pipe(
-        map((user: HttpResponse<any>) => {
+        map((user: any) => {
           if (user) {
             localStorage.setItem('token', user.tokenString);
             this.userToken = user.tokenString;
@@ -40,7 +40,7 @@ export class AuthService {
   private handleError(errorResponse: HttpErrorResponse) {
     const applicationError = errorResponse.headers.get('Application-Error');
     if (applicationError) {
-      return _throw(applicationError);
+      return throwError(applicationError);
     }
     const serverError = errorResponse.error;
     let modelStateErrors = '';
@@ -51,7 +51,7 @@ export class AuthService {
         }
       }
     }
-    return _throw(
+    return throwError(
       // if there is no model state error we still send a message
       modelStateErrors || 'Server error'
     );
