@@ -1,12 +1,22 @@
 import { Injectable } from '@angular/core';
 import { map, catchError } from 'rxjs/operators';
 import { throwError } from 'rxjs';
-import { HttpClient, HttpHeaders, HttpResponse, HttpErrorResponse } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpHeaders,
+  HttpResponse,
+  HttpErrorResponse
+} from '@angular/common/http';
+import { JwtHelperService } from '@auth0/angular-jwt';
+
+const LOCALSTORAGE_TOKEN_KEY = 'token';
 
 @Injectable()
 export class AuthService {
   baseUrl = 'https://localhost:5001/api/auth/';
-  userToken: any;
+  private userToken: any;
+  private decodedToken: any;
+  private readonly jwt = new JwtHelperService();
 
   constructor(private http: HttpClient) {}
 
@@ -16,8 +26,10 @@ export class AuthService {
       .pipe(
         map((user: any) => {
           if (user) {
-            localStorage.setItem('token', user.tokenString);
-            this.userToken = user.tokenString;
+            const token = user.tokenString;
+            localStorage.setItem(LOCALSTORAGE_TOKEN_KEY, token);
+            this.userToken = token;
+            this.decodedToken = this.jwt.decodeToken(token);
           }
         }),
         catchError(this.handleError)
@@ -28,6 +40,33 @@ export class AuthService {
     return this.http
       .post(this.baseUrl + 'register', model, this.httpOptions())
       .pipe(catchError(this.handleError));
+  }
+
+  logout() {
+    this.userToken = null;
+    this.decodedToken = null;
+    localStorage.removeItem(LOCALSTORAGE_TOKEN_KEY);
+  }
+
+  loggedIn() {
+    return !this.jwt.isTokenExpired();
+  }
+
+  getUsername() {
+    if (!this.decodedToken) {
+      this.loadTokenFromLocalStorage();
+    }
+
+    // the token can still be null because we are not logged in
+    return this.decodedToken ? this.decodedToken.unique_name : '';
+  }
+
+  private loadTokenFromLocalStorage() {
+    const token = localStorage.getItem(LOCALSTORAGE_TOKEN_KEY);
+    if (token) {
+      this.userToken = token;
+      this.decodedToken = this.jwt.decodeToken(token);
+    }
   }
 
   private httpOptions() {

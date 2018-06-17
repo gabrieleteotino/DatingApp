@@ -24,13 +24,16 @@ export class NavComponent implements OnInit {
   }
 
   logout() {
-    this.authService.userToken = null;
-    localStorage.removeItem('token');
+    this.authService.logout();
     this.alertify.message('Logged out');
   }
 
   loggedIn() {
     const token = localStorage.getItem('token');
     return !!token;
+  }
+
+  getUsername() {
+    return this.authService.getUsername();
   }
 }
