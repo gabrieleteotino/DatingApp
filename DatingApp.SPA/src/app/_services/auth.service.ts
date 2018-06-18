@@ -49,7 +49,8 @@ export class AuthService {
   }
 
   loggedIn() {
-    return !this.jwt.isTokenExpired();
+    const token: string = localStorage.getItem(LOCALSTORAGE_TOKEN_KEY);
+    return token ? !this.jwt.isTokenExpired(token) : false;
   }
 
   getUsername() {
