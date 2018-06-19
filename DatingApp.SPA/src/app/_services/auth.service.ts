@@ -8,12 +8,13 @@ import {
   HttpErrorResponse
 } from '@angular/common/http';
 import { JwtHelperService } from '@auth0/angular-jwt';
+import { environment } from '../../environments/environment';
 
 const LOCALSTORAGE_TOKEN_KEY = 'token';
 
 @Injectable()
 export class AuthService {
-  baseUrl = 'https://localhost:5001/api/auth/';
+  baseUrl = environment.apiUrl + 'auth/';
   private userToken: any;
   private decodedToken: any;
   private readonly jwt = new JwtHelperService();
