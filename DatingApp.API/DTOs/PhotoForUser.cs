@@ -1,0 +1,9 @@
+namespace DatingApp.API.DTOs
+{
+    public class PhotoForUser
+    {
+        public int Id { get; set; }
+        public string Url { get; set; }
+        public string Description { get; set; }
+    }
+}

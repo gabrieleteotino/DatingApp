@@ -7,7 +7,8 @@ namespace DatingApp.API.Models
     public class User
     {
         public int Id { get; set; }
-        public string Username { get; set; }
+        private string userName;
+        public string Username { get { return userName; } set { userName = value.ToLowerInvariant(); } }
         public byte[] PasswordSalt { get; set; }
         public byte[] PasswordHash { get; set; }
 

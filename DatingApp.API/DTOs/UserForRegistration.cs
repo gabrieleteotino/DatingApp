@@ -5,7 +5,7 @@ namespace DatingApp.API.DTOs
     public class UserForRegistration
     {
         [Required]
-        public Username Username { get; set; }
+        public string Username { get; set; }
 
         [Required]
         [StringLength(30, MinimumLength = 8, ErrorMessage = "The password must be between 8 and 30 characters.")]
