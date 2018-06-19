@@ -16,6 +16,8 @@ import { MessagesComponent } from './messages/messages.component';
 import { RouterModule } from '@angular/router';
 import { ROUTES } from './routes';
 import { AuthGuard } from './_guards/auth.guard';
+import { JwtModule } from '@auth0/angular-jwt';
+import { UserService } from './_services/user.service';
 
 @NgModule({
   declarations: [
@@ -30,6 +32,15 @@ import { AuthGuard } from './_guards/auth.guard';
   imports: [
     BrowserModule,
     HttpClientModule,
+    JwtModule.forRoot({
+      config: {
+        tokenGetter: () => {
+          return localStorage.getItem('token');
+        },
+        whitelistedDomains: ['localhost:5001'],
+        blacklistedRoutes: ['localhost:5001/api/auth/']
+      }
+    }),
     FormsModule,
     BsDropdownModule.forRoot(),
     RouterModule.forRoot(ROUTES)
@@ -37,6 +48,7 @@ import { AuthGuard } from './_guards/auth.guard';
   providers: [
     AuthService,
     AlertifyService,
+    UserService,
     AuthGuard
   ],
   bootstrap: [AppComponent]
