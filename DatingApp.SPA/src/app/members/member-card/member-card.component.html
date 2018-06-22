@@ -3,23 +3,23 @@
     <div class="panel-image">
       <img src="{{user.profilePhotoUrl}}" alt="{{user.knownAs}}">
 
-      <div class="btn-toolbar btn-toolbar-centered animate" role="toolbar">
-        <div class="btn-group" role="group">
-          <button class="btn btn-primary btn-responsive">
+      <ul class="list-inline member-icons animate text-center">
+        <li>
+          <button class="btn btn-primary btn-responsive" [routerLink]="['/members/', user.id]">
             <i class="fa fa-user"></i>
           </button>
-        </div>
-        <div class="btn-group" role="group">
-          <button class="btn btn-success btn-responsive">
+        </li>
+        <li>
+          <button class="btn btn-primary btn-responsive">
             <i class="fa fa-heart"></i>
           </button>
-        </div>
-        <div class="btn-group" role="group">
-          <button class="btn btn-info btn-responsive">
+        </li>
+        <li>
+          <button class="btn btn-primary btn-responsive">
             <i class="fa fa-envelope"></i>
           </button>
-        </div>
-      </div>
+        </li>
+      </ul>
 
       <div class="text-center">
         <h5>
@@ -29,6 +29,10 @@
         <h5>
           <small>{{user.city}}</small>
         </h5>
+        <span class="visible-xs">SIZE XS</span>
+        <span class="visible-sm">SIZE SM</span>
+        <span class="visible-md">SIZE MD</span>
+        <span class="visible-lg">SIZE LG</span>
       </div>
     </div>
   </div>
