@@ -1,7 +1,11 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { User } from '../_models/User';
-import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpHeaders,
+  HttpErrorResponse
+} from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
@@ -14,7 +18,14 @@ export class UserService {
   constructor(private http: HttpClient) {}
 
   getUsers(): Observable<User[]> {
-    return this.http.get<User[]>(this.baseUrl)
+    return this.http
+      .get<User[]>(this.baseUrl)
+      .pipe(catchError(this.handleError));
+  }
+
+  getUser(id: number): Observable<User> {
+    return this.http
+      .get<User>(this.baseUrl + id)
       .pipe(catchError(this.handleError));
   }
 
