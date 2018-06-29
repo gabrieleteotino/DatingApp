@@ -63,6 +63,15 @@ export class AuthService {
     return this.decodedToken ? this.decodedToken.unique_name : '';
   }
 
+  getUserId() {
+    if (!this.decodedToken) {
+      this.loadTokenFromLocalStorage();
+    }
+
+    // the token can still be null because we are not logged in
+    return this.decodedToken ? this.decodedToken.nameid : '';
+  }
+
   private loadTokenFromLocalStorage() {
     const token = localStorage.getItem(LOCALSTORAGE_TOKEN_KEY);
     if (token) {

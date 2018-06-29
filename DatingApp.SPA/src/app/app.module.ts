@@ -27,6 +27,8 @@ import { MemberDetailComponent } from './members/member-detail/member-detail.com
 
 import { MemberListResolver } from './_resolvers/member-list.resolver';
 import { MemberDetailResolver } from './_resolvers/member-detail.resolver';
+import { MemberEditComponent } from './members/member-edit/member-edit.component';
+import { MemberEditResolver } from './_resolvers/member-edit.resolver';
 
 @NgModule({
   declarations: [
@@ -38,7 +40,8 @@ import { MemberDetailResolver } from './_resolvers/member-detail.resolver';
     ListsComponent,
     MessagesComponent,
     MemberCardComponent,
-    MemberDetailComponent
+    MemberDetailComponent,
+    MemberEditComponent
   ],
   imports: [
     BrowserModule,
@@ -64,7 +67,8 @@ import { MemberDetailResolver } from './_resolvers/member-detail.resolver';
     UserService,
     AuthGuard,
     MemberListResolver,
-    MemberDetailResolver
+    MemberDetailResolver,
+    MemberEditResolver
   ],
   bootstrap: [AppComponent]
 })
