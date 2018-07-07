@@ -29,6 +29,12 @@ export class UserService {
       .pipe(catchError(this.handleError));
   }
 
+  updateUser(id: number, user: User): Observable<any> {
+    return this.http
+      .put(this.baseUrl + id, user)
+      .pipe(catchError(this.handleError));
+  }
+
   private handleError(errorResponse: HttpErrorResponse) {
     const applicationError = errorResponse.headers.get('Application-Error');
     if (applicationError) {
