@@ -78,9 +78,15 @@ namespace DatingApp.API.Controllers
                 {
                     var uploadParams = new ImageUploadParams()
                     {
-                        File = new FileDescription(file.Name, stream)
+                        File = new FileDescription(file.FileName, stream)
                     };
                     uploadResult = _cloudinary.Upload(uploadParams);
+                }
+
+                // Check if the upload was fine
+                if(uploadResult.Error != null)
+                {
+                    return BadRequest("Unable to upload photo.\n" + uploadResult.Error.Message);
                 }
 
                 // Save the results back in the DTO
