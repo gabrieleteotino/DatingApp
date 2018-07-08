@@ -61,28 +61,31 @@ namespace DatingApp.API
         {
             if (env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
+                // Uncomment this line to use a nice exception page
+                // app.UseDeveloperExceptionPage();
             }
             else
             {
                 app.UseHsts();
-                app.UseExceptionHandler(builder => 
-                {
-                    builder.Run(async context => {
-                        context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-
-                        var exceptionFeature = context.Features.Get<IExceptionHandlerFeature>();
-                        if (exceptionFeature != null)
-                        {
-                            context.Response.AddApplicationError(exceptionFeature.Error.Message);
-                            await context.Response.WriteAsync(exceptionFeature.Error.Message);
-                        }
-                    });
-                });
             }
 
-            seeder.SeedUsers();
+            app.UseExceptionHandler(builder =>
+            {
+                builder.Run(async context =>
+                {
+                    context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+
+                    var exceptionFeature = context.Features.Get<IExceptionHandlerFeature>();
+                    if (exceptionFeature != null)
+                    {
+                        context.Response.AddApplicationError(exceptionFeature.Error.Message);
+                        await context.Response.WriteAsync(exceptionFeature.Error.Message);
+                    }
+                });
+            });
             
+            seeder.SeedUsers();
+
             app.UseHttpsRedirection();
             // CORS must be configured before mvc
             app.UseCors(policy => policy
