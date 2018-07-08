@@ -1,0 +1,15 @@
+img.thumbnail {
+  width: 100px;
+  height: 100px;
+  margin-bottom: 2px;
+}
+
+/* Default class applied to drop zones on over */
+.nv-file-over {
+  border: dotted 3px red;
+}
+
+/* Hide the file button label */
+input[type=file] {
+    color: transparent;
+}

@@ -6,6 +6,7 @@ import { RouterModule } from '@angular/router';
 
 import { BsDropdownModule, TabsModule } from 'ngx-bootstrap';
 import { NgxGalleryModule } from 'ngx-gallery';
+import { FileUploadModule } from 'ng2-file-upload';
 import { AuthGuard } from './_guards/auth.guard';
 import { JwtModule } from '@auth0/angular-jwt';
 
@@ -24,6 +25,7 @@ import { MessagesComponent } from './messages/messages.component';
 import { MemberListComponent } from './members/member-list/member-list.component';
 import { MemberCardComponent } from './members/member-card/member-card.component';
 import { MemberDetailComponent } from './members/member-detail/member-detail.component';
+import { PhotoEditorComponent } from './members/photo-editor/photo-editor.component';
 
 import { MemberListResolver } from './_resolvers/member-list.resolver';
 import { MemberDetailResolver } from './_resolvers/member-detail.resolver';
@@ -42,7 +44,8 @@ import { PreventUnsavedChangesGuard } from './_guards/prevent-unsaved-changes.gu
     MessagesComponent,
     MemberCardComponent,
     MemberDetailComponent,
-    MemberEditComponent
+    MemberEditComponent,
+    PhotoEditorComponent
   ],
   imports: [
     BrowserModule,
@@ -60,7 +63,8 @@ import { PreventUnsavedChangesGuard } from './_guards/prevent-unsaved-changes.gu
     BsDropdownModule.forRoot(),
     TabsModule.forRoot(),
     NgxGalleryModule,
-    RouterModule.forRoot(ROUTES)
+    RouterModule.forRoot(ROUTES),
+    FileUploadModule
   ],
   providers: [
     AuthService,
@@ -74,4 +78,4 @@ import { PreventUnsavedChangesGuard } from './_guards/prevent-unsaved-changes.gu
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {}
