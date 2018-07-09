@@ -72,6 +72,14 @@ export class AuthService {
     return this.decodedToken ? this.decodedToken.nameid : '';
   }
 
+  getToken(): any {
+    if (!this.userToken) {
+      this.loadTokenFromLocalStorage();
+    }
+
+    return this.userToken;
+  }
+
   private loadTokenFromLocalStorage() {
     const token = localStorage.getItem(LOCALSTORAGE_TOKEN_KEY);
     if (token) {
