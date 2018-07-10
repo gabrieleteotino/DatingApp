@@ -2,7 +2,8 @@
   <div class="col-sm-2" *ngFor="let photo of photos">
     <img src="{{photo.url}}" alt="" class="thumbnail">
     <div class="text-center">
-      <button class="btn btn-xs">Main</button>
+      <button class="btn btn-xs" [ngClass]="photo.isMain ? 'btn-default active' : 'btn-primary'" (click)="setMainPhoto(photo)"
+        [disabled]="photo.isMain">Main</button>
       <button class="btn btn-xs btn-danger">
         <i class="fa fa-trash-o"></i>
       </button>
