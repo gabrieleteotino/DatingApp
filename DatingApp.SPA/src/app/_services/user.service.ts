@@ -35,6 +35,12 @@ export class UserService {
       .pipe(catchError(this.handleError));
   }
 
+  setMainPhoto(userId: number, photoId: number) {
+    return this.http
+      .post(this.baseUrl + userId + '/photos/' + photoId + '/setMain', {})
+      .pipe(catchError(this.handleError));
+  }
+
   private handleError(errorResponse: HttpErrorResponse) {
     const applicationError = errorResponse.headers.get('Application-Error');
     if (applicationError) {

@@ -78,13 +78,15 @@ namespace DatingApp.API.Controllers
                 {
                     var uploadParams = new ImageUploadParams()
                     {
-                        File = new FileDescription(file.FileName, stream)
+                        File = new FileDescription(file.FileName, stream),
+                        Transformation = new Transformation()
+                            .Width(500).Height(500).Crop("fill").Gravity("faces:center")
                     };
                     uploadResult = _cloudinary.Upload(uploadParams);
                 }
 
                 // Check if the upload was fine
-                if(uploadResult.Error != null)
+                if (uploadResult.Error != null)
                 {
                     return BadRequest("Unable to upload photo.\n" + uploadResult.Error.Message);
                 }
@@ -112,6 +114,43 @@ namespace DatingApp.API.Controllers
                 }
             }
             return BadRequest("Could not add the photo");
+        }
+
+        [HttpPost("{id}/setMain")]
+        public async Task<IActionResult> SetMainPhoto(int userId, int id)
+        {
+            // Only the current user can set it's main photo
+            var currentUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            if (userId != currentUserId)
+            {
+                return Unauthorized();
+            }
+
+            var photoToSet = await _repo.GetPhoto(id);
+            if (photoToSet == null)
+            {
+                return NotFound($"The photo {id} does not exists.");
+            }
+
+            if (photoToSet.IsMain)
+            {
+                return BadRequest("This is already the main photo");
+            }
+
+            var currentMainPhoto = await _repo.GetMainPhotoForUser(userId);
+            if (currentMainPhoto != null)
+            {
+                currentMainPhoto.IsMain = false;
+            }
+
+            photoToSet.IsMain = true;
+
+            if (await _repo.SaveAll())
+            {
+                return NoContent();
+            }
+
+            return BadRequest("Could not set the photo to main");
         }
     }
 }
