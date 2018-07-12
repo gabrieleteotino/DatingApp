@@ -9,8 +9,10 @@ import {
 } from '@angular/common/http';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { environment } from '../../environments/environment';
+import { User } from '../_models/User';
 
 const LOCALSTORAGE_TOKEN_KEY = 'token';
+const LOCALSTORAGE_USER_KEY = 'user';
 
 @Injectable()
 export class AuthService {
@@ -18,23 +20,10 @@ export class AuthService {
   private userToken: any;
   private decodedToken: any;
   private readonly jwt = new JwtHelperService();
+  private user: User;
 
-  constructor(private http: HttpClient) {}
-
-  login(model: any) {
-    return this.http
-      .post(this.baseUrl + 'login', model, this.httpOptions())
-      .pipe(
-        map((user: any) => {
-          if (user) {
-            const token = user.tokenString;
-            localStorage.setItem(LOCALSTORAGE_TOKEN_KEY, token);
-            this.userToken = token;
-            this.decodedToken = this.jwt.decodeToken(token);
-          }
-        }),
-        catchError(this.handleError)
-      );
+  constructor(private http: HttpClient) {
+    this.loadFromLocalStorage();
   }
 
   register(model: any) {
@@ -43,10 +32,31 @@ export class AuthService {
       .pipe(catchError(this.handleError));
   }
 
+  login(model: any) {
+    return this.http
+      .post(this.baseUrl + 'login', model, this.httpOptions())
+      .pipe(
+        map((response: any) => {
+          if (response) {
+            const token = response.tokenString;
+            localStorage.setItem(LOCALSTORAGE_TOKEN_KEY, token);
+            this.userToken = token;
+            this.decodedToken = this.jwt.decodeToken(token);
+
+            const user = response.user;
+            localStorage.setItem(LOCALSTORAGE_USER_KEY, JSON.stringify(user));
+            this.user = user;
+          }
+        }),
+        catchError(this.handleError)
+      );
+  }
+
   logout() {
     this.userToken = null;
     this.decodedToken = null;
     localStorage.removeItem(LOCALSTORAGE_TOKEN_KEY);
+    localStorage.removeItem(LOCALSTORAGE_USER_KEY);
   }
 
   loggedIn() {
@@ -55,36 +65,32 @@ export class AuthService {
   }
 
   getUsername() {
-    if (!this.decodedToken) {
-      this.loadTokenFromLocalStorage();
-    }
-
     // the token can still be null because we are not logged in
     return this.decodedToken ? this.decodedToken.unique_name : '';
   }
 
   getUserId() {
-    if (!this.decodedToken) {
-      this.loadTokenFromLocalStorage();
-    }
-
     // the token can still be null because we are not logged in
     return this.decodedToken ? this.decodedToken.nameid : '';
   }
 
-  getToken(): any {
-    if (!this.userToken) {
-      this.loadTokenFromLocalStorage();
-    }
-
+  getToken() {
     return this.userToken;
   }
 
-  private loadTokenFromLocalStorage() {
+  getUser(): User {
+    return this.user;
+  }
+
+  loadFromLocalStorage() {
     const token = localStorage.getItem(LOCALSTORAGE_TOKEN_KEY);
     if (token) {
       this.userToken = token;
       this.decodedToken = this.jwt.decodeToken(token);
+    }
+    const user = localStorage.getItem(LOCALSTORAGE_USER_KEY);
+    if (user) {
+      this.user = JSON.parse(user);
     }
   }
 

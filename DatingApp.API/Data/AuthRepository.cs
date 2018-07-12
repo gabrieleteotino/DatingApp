@@ -17,9 +17,11 @@ namespace DatingApp.API.Data
 
         public async Task<User> Login(string username, string password)
         {
-            if(string.IsNullOrWhiteSpace(username)) return null;
+            if (string.IsNullOrWhiteSpace(username)) return null;
 
-            var user = await _context.Users.FirstOrDefaultAsync(x => x.Username == username.ToLowerInvariant());
+            var user = await _context.Users
+                .Include(x => x.Photos)
+                .FirstOrDefaultAsync(x => x.Username == username.ToLowerInvariant());
 
             if (user == null) return null;
 
@@ -37,7 +39,7 @@ namespace DatingApp.API.Data
 
         public async Task<User> Register(User user, string password)
         {
-            if(user == null) return null;
+            if (user == null) return null;
             // The password must be a not empty string
             if (string.IsNullOrWhiteSpace(password)) return null;
 
@@ -50,7 +52,7 @@ namespace DatingApp.API.Data
 
         public async Task<bool> UserExists(string username)
         {
-            if(string.IsNullOrWhiteSpace(username)) return false;
+            if (string.IsNullOrWhiteSpace(username)) return false;
 
             return await _context.Users.AnyAsync(x => x.Username == username.ToLowerInvariant());
         }
