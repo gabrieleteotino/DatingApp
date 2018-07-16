@@ -26,6 +26,8 @@ export class MemberEditComponent implements OnInit {
     this.route.data.subscribe(data => {
       this.user = data['user'];
     });
+
+    this.authService.currentPhotoUrl.subscribe(next => { this.user.profilePhotoUrl = next; });
   }
 
   updateUser() {
@@ -38,9 +40,5 @@ export class MemberEditComponent implements OnInit {
         this.alertify.success(error);
       }
     );
-  }
-
-  reloadMainPhoto(photoUrl) {
-    this.user.profilePhotoUrl = photoUrl;
   }
 }

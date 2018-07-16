@@ -14,7 +14,6 @@ import * as _ from 'underscore';
 })
 export class PhotoEditorComponent implements OnInit {
   @Input() photos: Photo[];
-  @Output() mainPhotoChanged = new EventEmitter<string>();
   uploader: FileUploader;
   hasBaseDropZoneOver = false;
   baseUrl = environment.apiUrl;
@@ -62,7 +61,7 @@ export class PhotoEditorComponent implements OnInit {
           oldMain.isMain = false;
           photo.isMain = true;
           this.mainPhoto = photo;
-          this.mainPhotoChanged.emit(photo.url);
+          this.authService.changeMemberPhoto(photo.url);
         },
         error => {
           this.alertify.error(error);

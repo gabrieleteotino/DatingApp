@@ -11,6 +11,7 @@ import { User } from '../_models/User';
 })
 export class NavComponent implements OnInit {
   model: any = {};
+  photoUrl: string;
 
   constructor(
     private authService: AuthService,
@@ -18,7 +19,9 @@ export class NavComponent implements OnInit {
     private router: Router
   ) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.authService.currentPhotoUrl.subscribe(next => this.photoUrl = next);
+  }
 
   login() {
     console.log(this.model);
@@ -49,9 +52,5 @@ export class NavComponent implements OnInit {
 
   getUsername() {
     return this.authService.getUsername();
-  }
-
-  getPhotoUrl() {
-    return this.authService.getUser().profilePhotoUrl;
   }
 }

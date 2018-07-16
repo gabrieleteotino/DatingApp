@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { map, catchError } from 'rxjs/operators';
-import { throwError } from 'rxjs';
+import { throwError, BehaviorSubject } from 'rxjs';
 import {
   HttpClient,
   HttpHeaders,
@@ -21,6 +21,8 @@ export class AuthService {
   private decodedToken: any;
   private readonly jwt = new JwtHelperService();
   private user: User;
+  private mainPhotoUrl = new BehaviorSubject<string>('../../assets/user.png');
+  currentPhotoUrl = this.mainPhotoUrl.asObservable();
 
   constructor(private http: HttpClient) {
     this.loadFromLocalStorage();
@@ -43,9 +45,9 @@ export class AuthService {
             this.userToken = token;
             this.decodedToken = this.jwt.decodeToken(token);
 
-            const user = response.user;
-            localStorage.setItem(LOCALSTORAGE_USER_KEY, JSON.stringify(user));
-            this.user = user;
+            this.user = response.user;
+            localStorage.setItem(LOCALSTORAGE_USER_KEY, JSON.stringify(this.user));
+            this.mainPhotoUrl.next(this.user.profilePhotoUrl);
           }
         }),
         catchError(this.handleError)
@@ -78,8 +80,10 @@ export class AuthService {
     return this.userToken;
   }
 
-  getUser(): User {
-    return this.user;
+  changeMemberPhoto(photoUrl: string) {
+    this.mainPhotoUrl.next(photoUrl);
+    this.user.profilePhotoUrl = photoUrl;
+    localStorage.setItem(LOCALSTORAGE_USER_KEY, JSON.stringify(this.user));
   }
 
   loadFromLocalStorage() {
@@ -91,6 +95,7 @@ export class AuthService {
     const user = localStorage.getItem(LOCALSTORAGE_USER_KEY);
     if (user) {
       this.user = JSON.parse(user);
+      this.mainPhotoUrl.next(this.user.profilePhotoUrl);
     }
   }
 

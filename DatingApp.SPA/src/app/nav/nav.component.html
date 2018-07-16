@@ -35,7 +35,7 @@
 
       <ul *ngIf="loggedIn()" class="nav navbar-nav navbar-right">
         <li>
-          <img src="{{getPhotoUrl()}}" alt="{{getUsername()}}">
+          <img src="{{photoUrl}}" alt="{{getUsername()}}">
         </li>
         <li class="dropdown" dropdown>
           <a (click)="false" class="dropdown-toggle" dropdownToggle>Welcome {{ getUsername() }}
