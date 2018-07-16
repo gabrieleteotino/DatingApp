@@ -41,6 +41,12 @@ export class UserService {
       .pipe(catchError(this.handleError));
   }
 
+  deletePhoto(userId: number, photoId:number) {
+    return this.http
+      .delete(this.baseUrl + userId + '/photos/' + photoId)
+      .pipe(catchError(this.handleError));
+  }
+
   private handleError(errorResponse: HttpErrorResponse) {
     const applicationError = errorResponse.headers.get('Application-Error');
     if (applicationError) {
