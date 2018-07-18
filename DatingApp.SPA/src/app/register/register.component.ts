@@ -1,8 +1,14 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { AuthService } from '../_services/auth.service';
 import { AlertifyService } from '../_services/alertify.service';
-import { ChangeDetectionStrategy } from '@angular/compiler/src/core';
-import { FormGroup, FormControl } from '@angular/forms';
+import {
+  FormGroup,
+  FormControl,
+  Validators,
+  ValidationErrors,
+  FormBuilder
+} from '@angular/forms';
+import { BsDatepickerConfig } from 'ngx-bootstrap/datepicker';
 
 @Component({
   selector: 'app-register',
@@ -10,18 +16,57 @@ import { FormGroup, FormControl } from '@angular/forms';
   styleUrls: ['./register.component.css']
 })
 export class RegisterComponent implements OnInit {
-  model: any = {};
   @Output() cancelRegister = new EventEmitter();
+  model: any = {};
   registerForm: FormGroup;
+  bsConfig: Partial<BsDatepickerConfig> = { containerClass: 'theme-dark-blue', maxDate: this.yesterday() };
 
-  constructor(private auth: AuthService, private alertify: AlertifyService) {}
+  constructor(
+    private auth: AuthService,
+    private alertify: AlertifyService,
+    private fb: FormBuilder
+  ) {}
 
   ngOnInit() {
-    this.registerForm = new FormGroup({
-      username: new FormControl(),
-      password: new FormControl(),
-      confirmPassword: new FormControl()
-    });
+    this.createRegistrationForm();
+  }
+
+  private yesterday(): Date {
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    return yesterday;
+  }
+
+  private createRegistrationForm(): void {
+    this.registerForm = this.fb.group(
+      {
+        gender: ['male'],
+        username: ['', Validators.required],
+        knownAs: ['', Validators.required],
+        dateOfBirth: [null, Validators.required],
+        city: ['', Validators.required],
+        country: ['', Validators.required],
+        password: [
+          '',
+          [
+            Validators.required,
+            Validators.minLength(8),
+            Validators.maxLength(30)
+          ]
+        ],
+        confirmPassword: ['', Validators.required]
+      },
+      { validator: this.passwordMatchValidator }
+    );
+  }
+
+  private passwordMatchValidator(
+    formGroup: FormGroup
+  ): ValidationErrors | null {
+    return formGroup.get('password').value ===
+      formGroup.get('confirmPassword').value
+      ? null
+      : { passwordMismatch: true };
   }
 
   register() {

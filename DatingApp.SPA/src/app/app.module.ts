@@ -4,7 +4,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
-import { BsDropdownModule, TabsModule } from 'ngx-bootstrap';
+import { BsDropdownModule, TabsModule, BsDatepickerModule } from 'ngx-bootstrap';
 import { NgxGalleryModule } from 'ngx-gallery';
 import { FileUploadModule } from 'ng2-file-upload';
 import { AuthGuard } from './_guards/auth.guard';
@@ -64,6 +64,7 @@ import { PreventUnsavedChangesGuard } from './_guards/prevent-unsaved-changes.gu
     BsDropdownModule.forRoot(),
     TabsModule.forRoot(),
     NgxGalleryModule,
+    BsDatepickerModule.forRoot(),
     RouterModule.forRoot(ROUTES),
     FileUploadModule
   ],
