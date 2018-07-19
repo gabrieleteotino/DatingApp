@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using DatingApp.API.Data;
 using DatingApp.API.DTOs;
+using DatingApp.API.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -39,11 +40,11 @@ namespace DatingApp.API.Controllers
                 return BadRequest(ModelState);
             }
 
-            var userToCreate = new Models.User { Username = userForRegistration.Username };
+            var userToCreate = _mapper.Map<User>(userForRegistration);
             var createdUser = await _repo.Register(userToCreate, userForRegistration.Password);
 
-            // TODO this 201 is just a temporary solution, we should return a path to the new entity
-            return StatusCode(201);
+            var userToReturn = _mapper.Map<UserForDetail>(createdUser);
+            return CreatedAtRoute("GetUser", new { id = userToReturn.Id }, userToReturn);
         }
 
         [HttpPost("login")]
