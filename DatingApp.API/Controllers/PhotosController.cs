@@ -137,6 +137,12 @@ namespace DatingApp.API.Controllers
                 return BadRequest("This is already the main photo");
             }
 
+            // The current user cannot set a main photo from another user 
+            if (photoToSet.UserId != userId)
+            {
+                return Unauthorized();
+            }
+
             var currentMainPhoto = await _repo.GetMainPhotoForUser(userId);
             if (currentMainPhoto != null)
             {
