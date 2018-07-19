@@ -4,11 +4,16 @@ import { HttpClientModule } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
-import { BsDropdownModule, TabsModule, BsDatepickerModule } from 'ngx-bootstrap';
+import {
+  BsDropdownModule,
+  TabsModule,
+  BsDatepickerModule
+} from 'ngx-bootstrap';
 import { NgxGalleryModule } from 'ngx-gallery';
 import { FileUploadModule } from 'ng2-file-upload';
 import { AuthGuard } from './_guards/auth.guard';
 import { JwtModule } from '@auth0/angular-jwt';
+import { TimeAgoPipe } from 'time-ago-pipe';
 
 import { AppComponent } from './app.component';
 import { ROUTES } from './routes';
@@ -45,7 +50,8 @@ import { PreventUnsavedChangesGuard } from './_guards/prevent-unsaved-changes.gu
     MemberCardComponent,
     MemberDetailComponent,
     MemberEditComponent,
-    PhotoEditorComponent
+    PhotoEditorComponent,
+    TimeAgoPipe
   ],
   imports: [
     BrowserModule,
