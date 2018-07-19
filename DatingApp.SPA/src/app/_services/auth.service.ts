@@ -13,6 +13,7 @@ import { User } from '../_models/User';
 
 const LOCALSTORAGE_TOKEN_KEY = 'token';
 const LOCALSTORAGE_USER_KEY = 'user';
+const DEFAULT_USER_PICTURE = '../../assets/user.png';
 
 @Injectable()
 export class AuthService {
@@ -21,16 +22,16 @@ export class AuthService {
   private decodedToken: any;
   private readonly jwt = new JwtHelperService();
   private user: User;
-  private mainPhotoUrl = new BehaviorSubject<string>('../../assets/user.png');
+  private mainPhotoUrl = new BehaviorSubject<string>(DEFAULT_USER_PICTURE);
   currentPhotoUrl = this.mainPhotoUrl.asObservable();
 
   constructor(private http: HttpClient) {
     this.loadFromLocalStorage();
   }
 
-  register(model: any) {
+  register(user: User) {
     return this.http
-      .post(this.baseUrl + 'register', model, this.httpOptions())
+      .post(this.baseUrl + 'register', user, this.httpOptions())
       .pipe(catchError(this.handleError));
   }
 
@@ -46,8 +47,15 @@ export class AuthService {
             this.decodedToken = this.jwt.decodeToken(token);
 
             this.user = response.user;
-            localStorage.setItem(LOCALSTORAGE_USER_KEY, JSON.stringify(this.user));
-            this.mainPhotoUrl.next(this.user.profilePhotoUrl);
+            localStorage.setItem(
+              LOCALSTORAGE_USER_KEY,
+              JSON.stringify(this.user)
+            );
+            if (this.user.profilePhotoUrl !== null) {
+              this.mainPhotoUrl.next(this.user.profilePhotoUrl);
+            } else {
+              this.mainPhotoUrl.next(DEFAULT_USER_PICTURE);
+            }
           }
         }),
         catchError(this.handleError)
@@ -95,7 +103,11 @@ export class AuthService {
     const user = localStorage.getItem(LOCALSTORAGE_USER_KEY);
     if (user) {
       this.user = JSON.parse(user);
-      this.mainPhotoUrl.next(this.user.profilePhotoUrl);
+      if (this.user.profilePhotoUrl !== null) {
+        this.mainPhotoUrl.next(this.user.profilePhotoUrl);
+      } else {
+        this.mainPhotoUrl.next(DEFAULT_USER_PICTURE);
+      }
     }
   }
 

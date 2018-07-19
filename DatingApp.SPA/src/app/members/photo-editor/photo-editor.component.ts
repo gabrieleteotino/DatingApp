@@ -48,6 +48,10 @@ export class PhotoEditorComponent implements OnInit {
       if (response) {
         const photo: Photo = JSON.parse(response);
         this.photos.push(photo);
+        // if this is the first photo uploaded by the user
+        if (photo.isMain) {
+          this.authService.changeMemberPhoto(photo.url);
+        }
       }
     };
   }

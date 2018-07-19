@@ -5,7 +5,7 @@
   <div class="row">
     <div class="col-sm-4">
       <div class="panel panel-default">
-        <img class="thumbnail profile-image" src="{{user.profilePhotoUrl}}" alt="{{user.knownAs}}">
+        <img class="thumbnail profile-image" src="{{user.profilePhotoUrl ? user.profilePhotoUrl : '../../../assets/user.png'}}" alt="{{user.knownAs}}">
         <div class="panel-body">
           <div>
             <strong>Location:</strong>

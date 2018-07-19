@@ -41,7 +41,7 @@ export class UserService {
       .pipe(catchError(this.handleError));
   }
 
-  deletePhoto(userId: number, photoId:number) {
+  deletePhoto(userId: number, photoId: number) {
     return this.http
       .delete(this.baseUrl + userId + '/photos/' + photoId)
       .pipe(catchError(this.handleError));

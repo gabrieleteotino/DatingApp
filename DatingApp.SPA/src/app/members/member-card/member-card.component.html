@@ -1,7 +1,7 @@
 <div class="panel panel-default">
   <div class="panel-body">
     <div class="panel-image">
-      <img src="{{user.profilePhotoUrl}}" alt="{{user.knownAs}}">
+      <img src="{{user.profilePhotoUrl ? user.profilePhotoUrl : '../../../assets/user.png'}}" alt="{{user.knownAs}}">
 
       <ul class="list-inline member-icons animate text-center">
         <li>
