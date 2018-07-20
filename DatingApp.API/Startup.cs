@@ -54,6 +54,7 @@ namespace DatingApp.API
               });
             services.AddScoped<IAuthRepository, AuthRepository>();
             services.AddScoped<IDatingRepository, DatingRepository>();
+            services.AddScoped<Controllers.Filters.LogUserActivity>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -83,7 +84,7 @@ namespace DatingApp.API
                     }
                 });
             });
-            
+
             seeder.SeedUsers();
 
             app.UseHttpsRedirection();
