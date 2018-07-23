@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using DatingApp.API.Data;
 using DatingApp.API.DTOs;
+using DatingApp.API.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -25,11 +26,12 @@ namespace DatingApp.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetUsers()
+        public async Task<IActionResult> GetUsers([FromQuery] UserParams userParams)
         {
-            var users = await _repo.GetUsers();
+            var users = await _repo.GetUsers(userParams);
             var usersVM = _mapper.Map<IEnumerable<UserForList>>(users);
 
+            Response.AddPagination(users.CurrentPage, users.PageSize, users.TotalCount, users.TotalPages);
             return Ok(usersVM);
         }
 
@@ -77,6 +79,19 @@ namespace DatingApp.API.Controllers
             else
             {
                 throw new Exception($"Updating user {id} failed on save");
+            }
+        }
+
+        public class UserParams
+        {
+            private const int MaxPageSize = 50;
+            public int PageNumber { get; set; } = 1;
+
+            private int pageSize = 10;
+            public int PageSize
+            {
+                get { return pageSize; }
+                set { pageSize = (value > MaxPageSize) ? MaxPageSize : value; }
             }
         }
     }
