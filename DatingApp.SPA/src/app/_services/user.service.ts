@@ -4,10 +4,13 @@ import { User } from '../_models/User';
 import {
   HttpClient,
   HttpHeaders,
-  HttpErrorResponse
+  HttpErrorResponse,
+  HttpParams
 } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
+import { HttpResponse } from 'selenium-webdriver/http';
+import { PaginatedResult } from '../_models/PaginatedResult';
 
 @Injectable({
   providedIn: 'root'
@@ -17,9 +20,33 @@ export class UserService {
 
   constructor(private http: HttpClient) {}
 
-  getUsers(): Observable<User[]> {
+  getUsers(
+    page?: any,
+    itemsPerPage?: any
+  ): Observable<PaginatedResult<User[]>> {
+    let params = new HttpParams();
+    if (page != null && itemsPerPage != null) {
+      params = params.append('pageNumber', page);
+      params = params.append('pageSize', itemsPerPage);
+    }
+
     return this.http
-      .get<User[]>(this.baseUrl)
+      .get<User[]>(this.baseUrl, {
+        params: params,
+        observe: 'response'
+      })
+      .pipe(
+        map(response => {
+          const paginatedResults = new PaginatedResult<User[]>();
+          paginatedResults.result = response.body;
+          if (response.headers.get('Pagination') != null) {
+            paginatedResults.pagination = JSON.parse(
+              response.headers.get('Pagination')
+            );
+          }
+          return paginatedResults;
+        })
+      )
       .pipe(catchError(this.handleError));
   }
 

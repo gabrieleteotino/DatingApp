@@ -7,7 +7,8 @@ import { RouterModule } from '@angular/router';
 import {
   BsDropdownModule,
   TabsModule,
-  BsDatepickerModule
+  BsDatepickerModule,
+  PaginationModule
 } from 'ngx-bootstrap';
 import { NgxGalleryModule } from 'ngx-gallery';
 import { FileUploadModule } from 'ng2-file-upload';
@@ -71,6 +72,7 @@ import { PreventUnsavedChangesGuard } from './_guards/prevent-unsaved-changes.gu
     TabsModule.forRoot(),
     NgxGalleryModule,
     BsDatepickerModule.forRoot(),
+    PaginationModule.forRoot(),
     RouterModule.forRoot(ROUTES),
     FileUploadModule
   ],
