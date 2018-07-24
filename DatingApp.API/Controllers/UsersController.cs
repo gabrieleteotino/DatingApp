@@ -28,6 +28,20 @@ namespace DatingApp.API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetUsers([FromQuery] UserParams userParams)
         {
+            var currentUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+            var userFromRepo = await _repo.GetUser(currentUserId);
+            if (userFromRepo == null)
+            {
+                return NotFound($"Could not find a user with an ID of {currentUserId}");
+            }
+
+            userParams.UserId = currentUserId;
+            if (string.IsNullOrEmpty(userParams.Gender))
+            {
+                userParams.Gender = userFromRepo.Gender == "male" ? "female" : "male";
+            }
+
             var users = await _repo.GetUsers(userParams);
             var usersVM = _mapper.Map<IEnumerable<UserForList>>(users);
 
@@ -85,6 +99,8 @@ namespace DatingApp.API.Controllers
         public class UserParams
         {
             private const int MaxPageSize = 50;
+            public static readonly int MinAgeDefault = 18;
+            public static readonly int MaxAgeDefault = 99;
             public int PageNumber { get; set; } = 1;
 
             private int pageSize = 10;
@@ -93,6 +109,10 @@ namespace DatingApp.API.Controllers
                 get { return pageSize; }
                 set { pageSize = (value > MaxPageSize) ? MaxPageSize : value; }
             }
+            public int UserId { get; set; }
+            public string Gender { get; set; }
+            public int MinAge { get; set; } = MinAgeDefault;
+            public int MaxAge { get; set; } = MaxAgeDefault;
         }
     }
 }
