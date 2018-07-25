@@ -35,7 +35,8 @@ export class UserService {
       params = params
         .set('minAge', userParams.minAge)
         .set('maxAge', userParams.maxAge)
-        .set('gender', userParams.gender);
+        .set('gender', userParams.gender)
+        .set('orderBy', userParams.orderBy);
     }
 
     return this.http

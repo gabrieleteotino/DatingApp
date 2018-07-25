@@ -5,10 +5,11 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
 import {
+  ButtonsModule,
   BsDropdownModule,
-  TabsModule,
   BsDatepickerModule,
-  PaginationModule
+  PaginationModule,
+  TabsModule
 } from 'ngx-bootstrap';
 import { NgxGalleryModule } from 'ngx-gallery';
 import { FileUploadModule } from 'ng2-file-upload';
@@ -68,11 +69,12 @@ import { PreventUnsavedChangesGuard } from './_guards/prevent-unsaved-changes.gu
     }),
     FormsModule,
     ReactiveFormsModule,
+    ButtonsModule.forRoot(),
     BsDropdownModule.forRoot(),
-    TabsModule.forRoot(),
-    NgxGalleryModule,
     BsDatepickerModule.forRoot(),
     PaginationModule.forRoot(),
+    NgxGalleryModule,
+    TabsModule.forRoot(),
     RouterModule.forRoot(ROUTES),
     FileUploadModule
   ],

@@ -113,6 +113,8 @@ namespace DatingApp.API.Controllers
             public string Gender { get; set; }
             public int MinAge { get; set; } = MinAgeDefault;
             public int MaxAge { get; set; } = MaxAgeDefault;
+
+            public string OrderBy { get; set; }
         }
     }
 }
