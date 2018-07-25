@@ -4,6 +4,7 @@ import { AlertifyService } from '../../_services/alertify.service';
 import { UserService } from '../../_services/user.service';
 import { ActivatedRoute } from '@angular/router';
 import { Pagination } from '../../_models/Pagination';
+import { AuthService } from '../../_services/auth.service';
 
 @Component({
   selector: 'app-member-list',
@@ -12,12 +13,19 @@ import { Pagination } from '../../_models/Pagination';
 })
 export class MemberListComponent implements OnInit {
   users: User[];
+  user: User = this.authService.getUser();
+  genderList: any = [
+    { value: 'male', display: 'Males' },
+    { value: 'female', display: 'Females' }
+  ];
+  userParams: any = {};
   pagination: Pagination;
 
   constructor(
     private userService: UserService,
     private alertify: AlertifyService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private authService: AuthService
   ) {}
 
   ngOnInit() {
@@ -25,6 +33,10 @@ export class MemberListComponent implements OnInit {
       this.users = data['users'].result;
       this.pagination = data['users'].pagination;
     });
+
+    this.userParams.gender = this.user.gender === 'male' ? 'female' : 'male';
+    this.userParams.minAge = 18;
+    this.userParams.maxAge = 99;
   }
 
   pageChanged(event: any): void {
@@ -33,14 +45,23 @@ export class MemberListComponent implements OnInit {
   }
 
   loadUsers() {
-    this.userService.getUsers(this.pagination.currentPage, this.pagination.itemsPerPage).subscribe(
-      result => {
-        this.users = result.result;
-        this.pagination = result.pagination;
-      },
-      error => {
-        this.alertify.error(error);
-      }
-    );
+    this.userService
+      .getUsers(this.pagination.currentPage, this.pagination.itemsPerPage, this.userParams)
+      .subscribe(
+        result => {
+          this.users = result.result;
+          this.pagination = result.pagination;
+        },
+        error => {
+          this.alertify.error(error);
+        }
+      );
+  }
+
+  resetFilters() {
+    this.userParams.gender = this.user.gender === 'male' ? 'female' : 'male';
+    this.userParams.minAge = 18;
+    this.userParams.maxAge = 99;
+    this.loadUsers();
   }
 }

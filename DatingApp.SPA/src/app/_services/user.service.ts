@@ -22,12 +22,20 @@ export class UserService {
 
   getUsers(
     page?: any,
-    itemsPerPage?: any
+    itemsPerPage?: any,
+    userParams?: any
   ): Observable<PaginatedResult<User[]>> {
     let params = new HttpParams();
     if (page != null && itemsPerPage != null) {
-      params = params.append('pageNumber', page);
-      params = params.append('pageSize', itemsPerPage);
+      params = params
+        .set('pageNumber', page)
+        .set('pageSize', itemsPerPage);
+    }
+    if (userParams != null) {
+      params = params
+        .set('minAge', userParams.minAge)
+        .set('maxAge', userParams.maxAge)
+        .set('gender', userParams.gender);
     }
 
     return this.http

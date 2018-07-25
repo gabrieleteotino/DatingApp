@@ -88,6 +88,10 @@ export class AuthService {
     return this.userToken;
   }
 
+  getUser(): User {
+    return this.user;
+  }
+
   changeMemberPhoto(photoUrl: string) {
     this.mainPhotoUrl.next(photoUrl);
     this.user.profilePhotoUrl = photoUrl;
