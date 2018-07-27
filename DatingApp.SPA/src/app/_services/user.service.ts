@@ -1,15 +1,9 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { User } from '../_models/User';
-import {
-  HttpClient,
-  HttpHeaders,
-  HttpErrorResponse,
-  HttpParams
-} from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
-import { HttpResponse } from 'selenium-webdriver/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { PaginatedResult } from '../_models/PaginatedResult';
 
 @Injectable({
@@ -20,16 +14,10 @@ export class UserService {
 
   constructor(private http: HttpClient) {}
 
-  getUsers(
-    page?: any,
-    itemsPerPage?: any,
-    userParams?: any
-  ): Observable<PaginatedResult<User[]>> {
+  getUsers(page?: any, itemsPerPage?: any, userParams?: any): Observable<PaginatedResult<User[]>> {
     let params = new HttpParams();
     if (page != null && itemsPerPage != null) {
-      params = params
-        .set('pageNumber', page)
-        .set('pageSize', itemsPerPage);
+      params = params.set('pageNumber', page).set('pageSize', itemsPerPage);
     }
     if (userParams != null) {
       params = params
@@ -49,57 +37,26 @@ export class UserService {
           const paginatedResults = new PaginatedResult<User[]>();
           paginatedResults.result = response.body;
           if (response.headers.get('Pagination') != null) {
-            paginatedResults.pagination = JSON.parse(
-              response.headers.get('Pagination')
-            );
+            paginatedResults.pagination = JSON.parse(response.headers.get('Pagination'));
           }
           return paginatedResults;
         })
-      )
-      .pipe(catchError(this.handleError));
+      );
   }
 
   getUser(id: number): Observable<User> {
-    return this.http
-      .get<User>(this.baseUrl + id)
-      .pipe(catchError(this.handleError));
+    return this.http.get<User>(this.baseUrl + id);
   }
 
   updateUser(id: number, user: User): Observable<any> {
-    return this.http
-      .put(this.baseUrl + id, user)
-      .pipe(catchError(this.handleError));
+    return this.http.put(this.baseUrl + id, user);
   }
 
   setMainPhoto(userId: number, photoId: number) {
-    return this.http
-      .post(this.baseUrl + userId + '/photos/' + photoId + '/setMain', {})
-      .pipe(catchError(this.handleError));
+    return this.http.post(this.baseUrl + userId + '/photos/' + photoId + '/setMain', {});
   }
 
   deletePhoto(userId: number, photoId: number) {
-    return this.http
-      .delete(this.baseUrl + userId + '/photos/' + photoId)
-      .pipe(catchError(this.handleError));
-  }
-
-  private handleError(errorResponse: HttpErrorResponse) {
-    const applicationError = errorResponse.headers.get('Application-Error');
-    if (applicationError) {
-      return throwError(applicationError);
-    }
-    const serverError = errorResponse.error;
-    let modelStateErrors = '';
-    if (serverError) {
-      for (const key in serverError) {
-        if (serverError[key]) {
-          modelStateErrors += serverError[key] + '\n';
-        }
-      }
-    }
-    return throwError(
-      // if there is no model state error we still send a message
-      modelStateErrors || 'Server error'
-    );
+    return this.http.delete(this.baseUrl + userId + '/photos/' + photoId);
   }
 }

@@ -69,18 +69,17 @@ namespace DatingApp.API.Controllers
 
             // User is a ClaimsPrincipal defined in ControllerBase, we search for the first identity that has an id (NameIdentifier)
             var currentUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            // Only the current user can change its profile
+            if (id != currentUserId)
+            {
+                return Unauthorized();
+            }
 
             var userFromRepo = await _repo.GetUser(id);
 
             if (userFromRepo == null)
             {
                 return NotFound($"Could not find a user with an ID of {id}");
-            }
-
-            // Only the current user can change its profile
-            if (userFromRepo.Id != currentUserId)
-            {
-                return Unauthorized();
             }
 
             _mapper.Map(userForUpdate, userFromRepo);

@@ -1,12 +1,7 @@
 import { Injectable } from '@angular/core';
-import { map, catchError } from 'rxjs/operators';
-import { throwError, BehaviorSubject } from 'rxjs';
-import {
-  HttpClient,
-  HttpHeaders,
-  HttpResponse,
-  HttpErrorResponse
-} from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpResponse, HttpErrorResponse } from '@angular/common/http';
+import { BehaviorSubject } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { environment } from '../../environments/environment';
 import { User } from '../_models/User';
@@ -30,36 +25,28 @@ export class AuthService {
   }
 
   register(user: User) {
-    return this.http
-      .post(this.baseUrl + 'register', user, this.httpOptions())
-      .pipe(catchError(this.handleError));
+    return this.http.post(this.baseUrl + 'register', user, this.httpOptions());
   }
 
   login(model: any) {
-    return this.http
-      .post(this.baseUrl + 'login', model, this.httpOptions())
-      .pipe(
-        map((response: any) => {
-          if (response) {
-            const token = response.tokenString;
-            localStorage.setItem(LOCALSTORAGE_TOKEN_KEY, token);
-            this.userToken = token;
-            this.decodedToken = this.jwt.decodeToken(token);
+    return this.http.post(this.baseUrl + 'login', model, this.httpOptions()).pipe(
+      map((response: any) => {
+        if (response) {
+          const token = response.tokenString;
+          localStorage.setItem(LOCALSTORAGE_TOKEN_KEY, token);
+          this.userToken = token;
+          this.decodedToken = this.jwt.decodeToken(token);
 
-            this.user = response.user;
-            localStorage.setItem(
-              LOCALSTORAGE_USER_KEY,
-              JSON.stringify(this.user)
-            );
-            if (this.user.profilePhotoUrl !== null) {
-              this.mainPhotoUrl.next(this.user.profilePhotoUrl);
-            } else {
-              this.mainPhotoUrl.next(DEFAULT_USER_PICTURE);
-            }
+          this.user = response.user;
+          localStorage.setItem(LOCALSTORAGE_USER_KEY, JSON.stringify(this.user));
+          if (this.user.profilePhotoUrl !== null) {
+            this.mainPhotoUrl.next(this.user.profilePhotoUrl);
+          } else {
+            this.mainPhotoUrl.next(DEFAULT_USER_PICTURE);
           }
-        }),
-        catchError(this.handleError)
-      );
+        }
+      })
+    );
   }
 
   logout() {
@@ -120,25 +107,5 @@ export class AuthService {
       headers: new HttpHeaders({ 'Content-type': 'application/json' }),
       oberve: 'response'
     };
-  }
-
-  private handleError(errorResponse: HttpErrorResponse) {
-    const applicationError = errorResponse.headers.get('Application-Error');
-    if (applicationError) {
-      return throwError(applicationError);
-    }
-    const serverError = errorResponse.error;
-    let modelStateErrors = '';
-    if (serverError) {
-      for (const key in serverError) {
-        if (serverError[key]) {
-          modelStateErrors += serverError[key] + '\n';
-        }
-      }
-    }
-    return throwError(
-      // if there is no model state error we still send a message
-      modelStateErrors || 'Server error'
-    );
   }
 }

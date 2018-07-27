@@ -175,6 +175,12 @@ namespace DatingApp.API.Controllers
                 return NotFound($"The photo {id} does not exists.");
             }
 
+            // The current user cannot delete a photo from another user 
+            if (photoToDelete.UserId != userId)
+            {
+                return Unauthorized();
+            }
+
             if (photoToDelete.IsMain)
             {
                 return BadRequest("You cannot delete the main photo");
