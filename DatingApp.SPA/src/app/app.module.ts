@@ -39,6 +39,7 @@ import { MemberDetailResolver } from './_resolvers/member-detail.resolver';
 import { MemberEditComponent } from './members/member-edit/member-edit.component';
 import { MemberEditResolver } from './_resolvers/member-edit.resolver';
 import { PreventUnsavedChangesGuard } from './_guards/prevent-unsaved-changes.guard';
+import { ErrorInterceptorProvider } from './_services/error-interceptor';
 
 @NgModule({
   declarations: [
@@ -79,6 +80,7 @@ import { PreventUnsavedChangesGuard } from './_guards/prevent-unsaved-changes.gu
     FileUploadModule
   ],
   providers: [
+    ErrorInterceptorProvider,
     AuthService,
     AlertifyService,
     UserService,
