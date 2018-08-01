@@ -26,6 +26,12 @@ namespace DatingApp.API.Data
             _context.Remove(entity);
         }
 
+        public async Task<Like> GetLike(int userId, int recipientId)
+        {
+            return await _context.Likes
+                .FirstOrDefaultAsync(x => x.LikerId == userId && x.LikeeId == recipientId);
+        }
+
         public async Task<Photo> GetMainPhotoForUser(int userId)
         {
             return await _context.Photos.FirstOrDefaultAsync(x => x.UserId == userId && x.IsMain);
@@ -58,7 +64,7 @@ namespace DatingApp.API.Data
                 switch (userParams.OrderBy)
                 {
                     case "created":
-                        users = users.OrderByDescending(x=> x.Created);
+                        users = users.OrderByDescending(x => x.Created);
                         break;
                     default:
                         break;
