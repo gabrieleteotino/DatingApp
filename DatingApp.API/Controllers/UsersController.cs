@@ -97,7 +97,8 @@ namespace DatingApp.API.Controllers
         }
 
         [HttpPost("{id}/like/{recipientId}")]
-        public async Task<IActionResult> LikeUser(int id, int recipientId) {
+        public async Task<IActionResult> LikeUser(int id, int recipientId)
+        {
             var currentUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
             if (id != currentUserId)
             {
@@ -110,11 +111,12 @@ namespace DatingApp.API.Controllers
                 return BadRequest("You already like this user");
             }
 
-            if(await _repo.GetUser(recipientId) == null) {
+            if (await _repo.GetUser(recipientId) == null)
+            {
                 return NotFound();
             }
 
-            var like = new Like { LikerId = id, LikeeId = recipientId};
+            var like = new Like { FromId = id, ToId = recipientId };
 
             _repo.Add<Like>(like);
 
@@ -145,6 +147,8 @@ namespace DatingApp.API.Controllers
             public int MaxAge { get; set; } = MaxAgeDefault;
 
             public string OrderBy { get; set; }
+            public bool Likees { get; set; } = false;
+            public bool Likers { get; set; } = false;
         }
     }
 }

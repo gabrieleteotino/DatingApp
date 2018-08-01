@@ -2,9 +2,9 @@ namespace DatingApp.API.Models
 {
     public class Like
     {
-        public int LikerId { get; set; }
-        public User Liker { get; set; }
-        public int LikeeId { get; set; }
-        public User Likee { get; set; }
+        public int FromId { get; set; }
+        public User From { get; set; }
+        public int ToId { get; set; }
+        public User To { get; set; }
     }
 }

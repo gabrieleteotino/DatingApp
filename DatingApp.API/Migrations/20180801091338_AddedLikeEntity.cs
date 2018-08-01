@@ -10,30 +10,30 @@ namespace DatingApp.API.Migrations
                 name: "Likes",
                 columns: table => new
                 {
-                    LikerId = table.Column<int>(nullable: false),
-                    LikeeId = table.Column<int>(nullable: false)
+                    FromId = table.Column<int>(nullable: false),
+                    ToId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Likes", x => new { x.LikerId, x.LikeeId });
+                    table.PrimaryKey("PK_Likes", x => new { x.FromId, x.ToId });
                     table.ForeignKey(
-                        name: "FK_Likes_Users_LikeeId",
-                        column: x => x.LikeeId,
+                        name: "FK_Likes_Users_FromId",
+                        column: x => x.FromId,
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Likes_Users_LikerId",
-                        column: x => x.LikerId,
+                        name: "FK_Likes_Users_ToId",
+                        column: x => x.ToId,
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Likes_LikeeId",
+                name: "IX_Likes_ToId",
                 table: "Likes",
-                column: "LikeeId");
+                column: "ToId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

@@ -29,7 +29,7 @@ namespace DatingApp.API.Data
         public async Task<Like> GetLike(int userId, int recipientId)
         {
             return await _context.Likes
-                .FirstOrDefaultAsync(x => x.LikerId == userId && x.LikeeId == recipientId);
+                .FirstOrDefaultAsync(x => x.FromId == userId && x.ToId == recipientId);
         }
 
         public async Task<Photo> GetMainPhotoForUser(int userId)
@@ -58,6 +58,18 @@ namespace DatingApp.API.Data
                 var minAgeDateOfBirth = today.AddYears(-userParams.MinAge);
                 var maxAgeDateOfBirth = today.AddYears(-userParams.MaxAge - 1).AddDays(1);
                 users = users.Where(x => x.DateOfBirth <= minAgeDateOfBirth && x.DateOfBirth >= maxAgeDateOfBirth);
+            }
+            // Users that likes the current user
+            if (userParams.Likers)
+            {
+                // The users who have in the list of liked user a like pointing to the current user
+                users = users.Where(x => x.LikeTo.Any(y => y.ToId == userParams.UserId));
+            }
+            // Users that the current user likes
+            if (userParams.Likees)
+            {
+                // The users who have in the list of likers a like originated from the current user
+                users = users.Where(x => x.LikesFrom.Any(y => y.FromId == userParams.UserId));
             }
             if (!string.IsNullOrEmpty(userParams.OrderBy))
             {

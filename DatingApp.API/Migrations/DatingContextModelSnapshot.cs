@@ -18,13 +18,13 @@ namespace DatingApp.API.Migrations
 
             modelBuilder.Entity("DatingApp.API.Models.Like", b =>
                 {
-                    b.Property<int>("LikerId");
+                    b.Property<int>("FromId");
 
-                    b.Property<int>("LikeeId");
+                    b.Property<int>("ToId");
 
-                    b.HasKey("LikerId", "LikeeId");
+                    b.HasKey("FromId", "ToId");
 
-                    b.HasIndex("LikeeId");
+                    b.HasIndex("ToId");
 
                     b.ToTable("Likes");
                 });
@@ -103,14 +103,14 @@ namespace DatingApp.API.Migrations
 
             modelBuilder.Entity("DatingApp.API.Models.Like", b =>
                 {
-                    b.HasOne("DatingApp.API.Models.User", "Liker")
-                        .WithMany("Likees")
-                        .HasForeignKey("LikeeId")
+                    b.HasOne("DatingApp.API.Models.User", "From")
+                        .WithMany("LikeTo")
+                        .HasForeignKey("FromId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("DatingApp.API.Models.User", "Likee")
-                        .WithMany("Likers")
-                        .HasForeignKey("LikerId")
+                    b.HasOne("DatingApp.API.Models.User", "To")
+                        .WithMany("LikesFrom")
+                        .HasForeignKey("ToId")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 

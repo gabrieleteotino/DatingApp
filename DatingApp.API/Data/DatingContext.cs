@@ -18,21 +18,19 @@ namespace DatingApp.API.Data
         {
             // Define a primary key for Like
             modelBuilder.Entity<Like>()
-                .HasKey(x => new { x.LikerId, x.LikeeId });
+                .HasKey(x => new { x.FromId, x.ToId });
 
-            // Define many to many
             modelBuilder.Entity<Like>()
-                .HasOne(l => l.Likee)
-                .WithMany(u => u.Likers)
-                .HasForeignKey(l => l.LikerId)
+                .HasOne(l => l.From)
+                .WithMany(u => u.LikeTo)
+                .HasForeignKey(l => l.FromId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Like>()
-                .HasOne(l => l.Liker)
-                .WithMany(u => u.Likees)
-                .HasForeignKey(l => l.LikeeId)
+                .HasOne(l => l.To)
+                .WithMany(u => u.LikesFrom)
+                .HasForeignKey(l => l.ToId)
                 .OnDelete(DeleteBehavior.Restrict);
         }
-
     }
 }
