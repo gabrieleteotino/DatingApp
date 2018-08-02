@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DatingApp.API.DTOs;
 using DatingApp.API.Helpers;
 using DatingApp.API.Models;
 using Microsoft.EntityFrameworkCore;
-using static DatingApp.API.Controllers.UsersController;
 
 namespace DatingApp.API.Data
 {
@@ -40,6 +40,30 @@ namespace DatingApp.API.Data
         public async Task<Message> GetMessage(int id)
         {
             return await _context.Messages.FirstOrDefaultAsync(x => x.Id == id);
+        }
+
+        public async Task<PagedList<Message>> GetMessagesForUser(MessageParams messageParams)
+        {
+            var messages = _context.Messages
+                .Include(m => m.Sender).ThenInclude(u => u.Photos)
+                .Include(m => m.Recipient).ThenInclude(u => u.Photos)
+                .AsQueryable();
+            
+            switch(messageParams.MessageContainer)
+            {
+                case "Inbox":
+                    messages = messages.Where(m => m.RecipientId == messageParams.UserId);
+                    break;
+                case "Outbox":
+                    messages = messages.Where(m => m.SenderId == messageParams.UserId);
+                    break;
+                default: //"Unread"
+                    messages = messages.Where(m => m.RecipientId == messageParams.UserId && !m.IsRead);
+                    break;
+            }
+
+            messages = messages.OrderByDescending(m=>m.SentDate);
+            return await PagedList<Message>.CreateAsync(messages, messageParams.PageNumber, messageParams.PageSize);
         }
 
         public async Task<Photo> GetPhoto(int id)
