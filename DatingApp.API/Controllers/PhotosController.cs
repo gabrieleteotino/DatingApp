@@ -16,7 +16,8 @@ namespace DatingApp.API.Controllers
 {
     [Authorize]
     [Route("api/users/{userId}/photos")]
-    public class PhotosController : Controller
+    [ApiController]
+    public class PhotosController : ControllerBase
     {
         private readonly IDatingRepository _repo;
         private readonly IMapper _mapper;
