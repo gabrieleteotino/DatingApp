@@ -41,6 +41,7 @@ import { MemberEditResolver } from './_resolvers/member-edit.resolver';
 import { PreventUnsavedChangesGuard } from './_guards/prevent-unsaved-changes.guard';
 import { ErrorInterceptorProvider } from './_services/error-interceptor';
 import { ListsResolver } from './_resolvers/lists.resolver';
+import { MessagesResolver } from './_resolvers/messages.resolver';
 
 @NgModule({
   declarations: [
@@ -90,7 +91,8 @@ import { ListsResolver } from './_resolvers/lists.resolver';
     MemberListResolver,
     MemberDetailResolver,
     MemberEditResolver,
-    ListsResolver
+    ListsResolver,
+    MessagesResolver
   ],
   bootstrap: [AppComponent]
 })
