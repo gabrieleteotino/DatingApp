@@ -116,5 +116,41 @@ namespace DatingApp.API.Controllers
 
             throw new Exception("Creation failed on save");
         }
+
+        [HttpPost("{id}")]
+        public async Task<IActionResult> DeleteMessage(int userId, int id)
+        {
+            if (userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+            {
+                return Unauthorized();
+            }
+
+            var messageToDelete = await _repo.GetMessage(id);
+
+            if (messageToDelete.SenderId != userId && messageToDelete.RecipientId != userId)
+            {
+                return Unauthorized();
+            }
+
+            if (messageToDelete.SenderId == userId)
+            {
+                messageToDelete.SenderDeleted = true;
+            }
+            
+            if (messageToDelete.RecipientId == userId)
+            {
+                messageToDelete.RecipientDeleted = true;
+            }
+
+            if(messageToDelete.SenderDeleted && messageToDelete.RecipientDeleted) {
+                _repo.Delete(messageToDelete);
+            }
+
+            if(await _repo.SaveAll()) {
+                return NoContent();
+            }
+
+            throw new Exception("Deletion failed on save");
+        }
     }
 }

@@ -106,7 +106,11 @@ export class UserService {
     return this.http.get<Message[]>(this.baseUrl + fromUserId + '/messages/thread/' + toUserId);
   }
 
-  sendMessage(id: number, message: Message) {
-    return this.http.post(this.baseUrl + id + '/messages', message);
+  sendMessage(userId: number, message: Message) {
+    return this.http.post(this.baseUrl + userId + '/messages', message);
+  }
+
+  deleteMessage(userId: number, messageId: number) {
+    return this.http.post(this.baseUrl + userId + '/messages/' + messageId, {});
   }
 }
