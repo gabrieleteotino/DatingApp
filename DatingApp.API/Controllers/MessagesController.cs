@@ -136,21 +136,51 @@ namespace DatingApp.API.Controllers
             {
                 messageToDelete.SenderDeleted = true;
             }
-            
+
             if (messageToDelete.RecipientId == userId)
             {
                 messageToDelete.RecipientDeleted = true;
             }
 
-            if(messageToDelete.SenderDeleted && messageToDelete.RecipientDeleted) {
+            if (messageToDelete.SenderDeleted && messageToDelete.RecipientDeleted)
+            {
                 _repo.Delete(messageToDelete);
             }
 
-            if(await _repo.SaveAll()) {
+            if (await _repo.SaveAll())
+            {
                 return NoContent();
             }
 
             throw new Exception("Deletion failed on save");
+        }
+
+        [HttpPost("{id}/read")]
+        public async Task<IActionResult> MarkMessageAsRead(int userId, int id)
+        {
+            if (userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+            {
+                return Unauthorized();
+            }
+
+            var messageToRead = await _repo.GetMessage(id);
+            if (messageToRead.RecipientId != userId)
+            {
+                return Unauthorized();
+            }
+            if (messageToRead.IsRead)
+            {
+                return BadRequest("Message is already marked as read");
+            }
+
+            messageToRead.IsRead = true;
+            messageToRead.ReadDate = DateTime.UtcNow;
+
+            if (await _repo.SaveAll())
+            {
+                return NoContent();
+            }
+            throw new Exception("Mark as read failed on save");
         }
     }
 }
