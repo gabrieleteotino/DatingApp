@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { User } from '../_models/User';
 import { ActivatedRoute } from '@angular/router';
 import { UserService } from '../_services/user.service';
-import { AuthService } from '../_services/auth.service';
 import { AlertifyService } from '../_services/alertify.service';
 import { Pagination } from '../_models/Pagination';
 
@@ -16,14 +15,10 @@ export class ListsComponent implements OnInit {
   pagination: Pagination;
   likesParam: string;
 
-  constructor(
-    private route: ActivatedRoute,
-    private userService: UserService,
-    private alertify: AlertifyService
-  ) {}
+  constructor(private route: ActivatedRoute, private userService: UserService, private alertify: AlertifyService) {}
 
   ngOnInit() {
-    this.route.data.subscribe(data=> {
+    this.route.data.subscribe(data => {
       this.users = data['users'].result;
       this.pagination = data['users'].pagination;
     });

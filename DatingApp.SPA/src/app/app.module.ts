@@ -42,6 +42,7 @@ import { PreventUnsavedChangesGuard } from './_guards/prevent-unsaved-changes.gu
 import { ErrorInterceptorProvider } from './_services/error-interceptor';
 import { ListsResolver } from './_resolvers/lists.resolver';
 import { MessagesResolver } from './_resolvers/messages.resolver';
+import { MemberMessagesComponent } from './members/member-messages/member-messages.component';
 
 @NgModule({
   declarations: [
@@ -56,6 +57,7 @@ import { MessagesResolver } from './_resolvers/messages.resolver';
     MemberDetailComponent,
     MemberEditComponent,
     PhotoEditorComponent,
+    MemberMessagesComponent,
     TimeAgoPipe
   ],
   imports: [

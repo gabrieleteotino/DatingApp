@@ -72,7 +72,10 @@ export class UserService {
   }
 
   getMessages(
-    userId: number, pageNumber?: number, itemsPerPage?: number, messageContainer?: string
+    userId: number,
+    pageNumber?: number,
+    itemsPerPage?: number,
+    messageContainer?: string
   ): Observable<PaginatedResult<Message[]>> {
     let params = new HttpParams();
     if (pageNumber != null && itemsPerPage != null) {
@@ -97,5 +100,13 @@ export class UserService {
           return paginatedResults;
         })
       );
+  }
+
+  getMessageThread(fromUserId: number, toUserId: number) {
+    return this.http.get<Message[]>(this.baseUrl + fromUserId + '/messages/thread/' + toUserId);
+  }
+
+  sendMessage(id: number, message: Message) {
+    return this.http.post(this.baseUrl + id + '/messages', message);
   }
 }

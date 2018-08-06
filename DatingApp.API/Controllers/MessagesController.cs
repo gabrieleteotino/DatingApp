@@ -108,7 +108,9 @@ namespace DatingApp.API.Controllers
 
             if (await _repo.SaveAll())
             {
-                var messageToReturn = _mapper.Map<MessageForCreated>(message);
+                // Load the sender detail so that automapper can use it
+                var sender = await _repo.GetUser(userId);
+                var messageToReturn = _mapper.Map<MessageForList>(message);
                 return CreatedAtRoute("GetMessage", new { id = message.Id }, messageToReturn);
             }
 
