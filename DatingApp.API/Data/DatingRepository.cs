@@ -124,6 +124,7 @@ namespace DatingApp.API.Data
                         break;
                 }
             }
+            
             return await PagedList<User>.CreateAsync(users, userParams.PageNumber, userParams.PageSize);
         }
 

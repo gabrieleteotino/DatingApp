@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -34,15 +35,31 @@ namespace DatingApp.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            ConfigureServicesCommon(services);
+            services.AddDbContext<DatingContext>(options => options
+                .UseMySql(Configuration.GetConnectionString("DatingDbConnection"))
+                // Remove the warning for unused includes in queries caused by PagedList.CreateAsync count of DatingRepository.GetUsers
+                .ConfigureWarnings(warnings => warnings.Ignore(CoreEventId.IncludeIgnoredWarning))
+            );
+        }
+
+        public void ConfigureDevelopmentServices(IServiceCollection services)
+        {
+            ConfigureServicesCommon(services);
+            services.AddDbContext<DatingContext>(options => options.UseSqlite(Configuration.GetConnectionString("DatingDbConnection")));
+        }
+        
+        private void ConfigureServicesCommon(IServiceCollection services)
+        {
             services.AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
-                .AddJsonOptions(options => {
+                .AddJsonOptions(options =>
+                {
                     options.SerializerSettings.DateTimeZoneHandling = Newtonsoft.Json.DateTimeZoneHandling.Utc;
                 });
-            services.AddDbContext<DatingContext>(options => options.UseSqlite(Configuration.GetConnectionString("DatingDbConnection")));
             services.AddTransient<Seed>();
             services.AddCors();
-            services.Configure<CloudinarySettings>(Configuration.GetSection("CloudinarySettings"));
+            services.Configure<CloudinarySettings>(Configuration.GetSection("CloudinarySettings"));            
             services.AddAutoMapper();
             var key = System.Text.Encoding.UTF8.GetBytes(Configuration.GetSection("AppSettings:TokenSecret").Value);
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -99,7 +116,12 @@ namespace DatingApp.API
                 .AllowAnyMethod()
                 .AllowCredentials());
             app.UseAuthentication();
-            app.UseMvc();
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
+            app.UseMvc(routes =>
+            {
+                routes.MapSpaFallbackRoute("spa-fallback", defaults: new { Controller = "Fallback", Action = "Index" });
+            });
         }
     }
 }

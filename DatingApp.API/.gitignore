@@ -33,3 +33,4 @@ msbuild.wrn
 
 # Secret configuration files
 cloudinarysettings.json
+dotnetprod.sh

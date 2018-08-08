@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -9,6 +10,7 @@ using DatingApp.API.DTOs;
 using DatingApp.API.Helpers;
 using DatingApp.API.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
@@ -21,12 +23,10 @@ namespace DatingApp.API.Controllers
     {
         private readonly IDatingRepository _repo;
         private readonly IMapper _mapper;
-        private readonly IOptions<CloudinarySettings> _cloudinarySettings;
         private Cloudinary _cloudinary;
 
         public PhotosController(IDatingRepository repo, IMapper mapper, IOptions<CloudinarySettings> cloudinarySettings)
         {
-            _cloudinarySettings = cloudinarySettings;
             _mapper = mapper;
             _repo = repo;
 
@@ -52,24 +52,20 @@ namespace DatingApp.API.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> AddPhotoForUser(int userId, PhotoForCreation photoDto)
+        public async Task<IActionResult> AddPhotoForUser(int userId, IFormFile file)
         {
-            var user = await _repo.GetUser(userId);
+            // Only the current user can upload it's photos
+            if (userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+            {
+                return Unauthorized();
+            }
 
+            var user = await _repo.GetUser(userId);
             if (user == null)
             {
                 return BadRequest("Could not find user");
             }
 
-            var currentUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
-
-            // Only the current user can upload it's photos
-            if (user.Id != currentUserId)
-            {
-                return Unauthorized();
-            }
-
-            var file = photoDto.File;
 
             if (file.Length > 0)
             {
@@ -92,13 +88,12 @@ namespace DatingApp.API.Controllers
                     return BadRequest("Unable to upload photo.\n" + uploadResult.Error.Message);
                 }
 
-                // Save the results back in the DTO
-                photoDto.Url = uploadResult.Uri.ToString();
-                photoDto.PublicId = uploadResult.PublicId;
-
-                // Map the dto to a Photo model
-                var photo = _mapper.Map<Photo>(photoDto);
-                photo.User = user;
+                var photo = new Photo {
+                    DateAdded = DateTime.UtcNow,
+                    Url = uploadResult.SecureUri.ToString(),
+                    PublicId = uploadResult.PublicId,
+                    User = user
+                };
 
                 // Check if the photo has to be the main photo for the user
                 if (!user.Photos.Any(x => x.IsMain))

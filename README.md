@@ -8,15 +8,17 @@ The course used a previous version of .net core I fixed everything to use 2.1.0-
 
 # Configuration
 
-## JWT TokenSecret
+## Development
+
+### JWT TokenSecret
 
 Create a key for **TokenSecret**.
 
-```
+```shell
 dotnet user-secrets set "AppSettings:TokenSecret" "super duper secret key"
 ```
 
-## Cloudinary
+### Cloudinary
 
 Register an account at [Cloudinary](https://cloudinary.com/invites/lpov9zyyucivvxsnalc5/sqiocmogqhvi7zmjbmjs)
 
@@ -37,3 +39,18 @@ Pipe the configuration file in secret storage
 ```shell
 cat ./cloudinarysettings.json | dotnet user-secrets set
 ```
+
+## Production
+
+Create a copy of dotnetprod_example.sh
+
+```shell
+cd DatingApp.API
+cp dotnetprod_example.sh dotnetprod.sh
+```
+
+The filename **dotnetprod.sh** is in *.gitignore* to avoid unintentional push
+
+Edit the file and put your keys inside.
+
+Launch the application using the script.
