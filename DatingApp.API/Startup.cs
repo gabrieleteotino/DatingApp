@@ -37,7 +37,14 @@ namespace DatingApp.API
         {
             ConfigureServicesCommon(services);
             services.AddDbContext<DatingContext>(options => options
-                .UseMySql(Configuration.GetConnectionString("DatingDbConnection"))
+                .UseMySql(Configuration.GetConnectionString("DatingDbConnection"), mysqlOptions =>
+                {
+                    // Connection Resiliency
+                    mysqlOptions.EnableRetryOnFailure(
+                        maxRetryCount: 10,
+                        maxRetryDelay: TimeSpan.FromSeconds(30),
+                        errorNumbersToAdd: new int[] { 0 });
+                })
                 // Remove the warning for unused includes in queries caused by PagedList.CreateAsync count of DatingRepository.GetUsers
                 .ConfigureWarnings(warnings => warnings.Ignore(CoreEventId.IncludeIgnoredWarning))
             );
@@ -48,7 +55,7 @@ namespace DatingApp.API
             ConfigureServicesCommon(services);
             services.AddDbContext<DatingContext>(options => options.UseSqlite(Configuration.GetConnectionString("DatingDbConnection")));
         }
-        
+
         private void ConfigureServicesCommon(IServiceCollection services)
         {
             services.AddMvc()
@@ -57,9 +64,8 @@ namespace DatingApp.API
                 {
                     options.SerializerSettings.DateTimeZoneHandling = Newtonsoft.Json.DateTimeZoneHandling.Utc;
                 });
-            services.AddTransient<Seed>();
             services.AddCors();
-            services.Configure<CloudinarySettings>(Configuration.GetSection("CloudinarySettings"));            
+            services.Configure<CloudinarySettings>(Configuration.GetSection("CloudinarySettings"));
             services.AddAutoMapper();
             var key = System.Text.Encoding.UTF8.GetBytes(Configuration.GetSection("AppSettings:TokenSecret").Value);
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -79,7 +85,7 @@ namespace DatingApp.API
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, Seed seeder)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -106,7 +112,7 @@ namespace DatingApp.API
                 });
             });
 
-            seeder.SeedUsers();
+
 
             app.UseHttpsRedirection();
             // CORS must be configured before mvc

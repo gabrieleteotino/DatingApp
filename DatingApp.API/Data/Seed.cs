@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using DatingApp.API.Models;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
 namespace DatingApp.API.Data
@@ -14,10 +16,10 @@ namespace DatingApp.API.Data
             _context = context;
         }
 
-        public void SeedUsers()
+        public async Task SeedUsers()
         {
             // If the db is not empty abort the seeding
-            if(_context.Users.Any()) {
+            if(await _context.Users.AnyAsync()) {
                 return;
             }
 
@@ -37,7 +39,7 @@ namespace DatingApp.API.Data
                 _context.Users.Add(user);
             }
 
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
     }
 }
