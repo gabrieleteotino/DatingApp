@@ -1,6 +1,6 @@
 
 FROM microsoft/dotnet:2.1-aspnetcore-runtime
 WORKDIR /app
-COPY DatingApp.API/out .
+COPY ./publish .
 
 ENTRYPOINT ["dotnet", "DatingApp.API.dll"]
